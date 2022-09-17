@@ -1,1 +1,1 @@
-# irish-literary-network
+# Irish literary network
