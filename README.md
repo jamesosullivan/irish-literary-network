@@ -1,1 +1,1 @@
-# Irish literary network
+# Irish literary network analysis
