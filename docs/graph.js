@@ -22,3 +22,21 @@ d3.csv('data.csv').then(data => {
   const links = data.map(d => ({source: d.source, target: d.target, color: d.color}));
   graph.setData(nodes, links);
 });
+
+// Node search function
+
+const searchInput = document.getElementById('search');
+
+searchInput.addEventListener('input', (event) => {
+  const searchValue = event.target.value;
+
+  // Clear all highlighted nodes
+  nodes.forEach(node => node.color = 'defaultColor');
+
+  // Find and highlight the searched node
+  const foundNode = nodes.find(node => node.id === searchValue);
+  if (foundNode) foundNode.color = 'highlightColor';
+
+  // Update the graph
+  graph.setData(nodes, links);
+});
