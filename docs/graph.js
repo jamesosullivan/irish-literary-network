@@ -31,11 +31,11 @@ searchInput.addEventListener('input', (event) => {
   const searchValue = event.target.value;
 
   // Clear all highlighted nodes
-  nodes.forEach(node => node.color = 'defaultColor');
+  nodes.forEach(node => node.color = '#00ff00');
 
   // Find and highlight the searched node
   const foundNode = nodes.find(node => node.id === searchValue);
-  if (foundNode) foundNode.color = 'highlightColor';
+  if (foundNode) foundNode.color = '#ff0000';
 
   // Update the graph
   graph.setData(nodes, links);
