@@ -88,13 +88,12 @@ const onTick = (alpha?: number) => {
 
 const onPointClick = (node?: Node) => {
   selectedNode = node;
-  graph.pause();
   cosmosLabels.resetNodes();
   if (node) {
     var adjacentNodes = graph.getAdjacentNodes(node.id);
     if (adjacentNodes) {
+      graph.selectNodesByIds([node.id, ...adjacentNodes.map(n => n.id)]);
       var addNodes = adjacentNodes.sort((a, b) => b.totalLinks! - a.totalLinks!).slice(0, 50);
-      graph.selectNodesByIds([node.id, ...addNodes.map(n => n.id)]);
       cosmosLabels.trackNodes([node, ...addNodes]);
     } else {
       cosmosLabels.trackNodes([node]);
@@ -175,5 +174,3 @@ $("#node-search").on("select2:select", function(e) {
 $("#node-search").on("select2:unselect", function(e) {
   onPointClick();
 });
-
-

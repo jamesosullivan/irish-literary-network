@@ -38673,17 +38673,16 @@ var _onTick = function _onTick(alpha) {
 };
 var onPointClick = function onPointClick(node) {
   selectedNode = node;
-  graph.pause();
   cosmosLabels.resetNodes();
   if (node) {
     var adjacentNodes = graph.getAdjacentNodes(node.id);
     if (adjacentNodes) {
+      graph.selectNodesByIds(__spreadArray([node.id], adjacentNodes.map(function (n) {
+        return n.id;
+      }), true));
       var addNodes = adjacentNodes.sort(function (a, b) {
         return b.totalLinks - a.totalLinks;
       }).slice(0, 50);
-      graph.selectNodesByIds(__spreadArray([node.id], addNodes.map(function (n) {
-        return n.id;
-      }), true));
       cosmosLabels.trackNodes(__spreadArray([node], addNodes, true));
     } else {
       cosmosLabels.trackNodes([node]);
@@ -38792,7 +38791,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "42409" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44933" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
