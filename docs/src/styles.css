@@ -1,0 +1,50 @@
+body {
+  font-family: sans-serif;
+  margin: 0px;
+}
+
+.app {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.actions {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #ccc;
+}
+
+.actions-header {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.action {
+  margin-left: 2p0;
+  font-size: 10pt;
+  text-decoration: underline;
+  cursor: pointer;
+  user-select: none;
+}
+
+.search-box {
+  position: absolute;
+  bottom: 32px;
+  left: 32px;
+  width: 240px;
+}
+
+.node-search {
+  width: 100%;
+}
+
+#selected-area {
+  display: none;
+}
