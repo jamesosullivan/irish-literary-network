@@ -14,13 +14,14 @@ let mostImportantNodes: Node[] = [];
 
 const config: GraphConfigInterface<Node, Link> = {
   backgroundColor: "#222222",
-  nodeSize: 3,
+  nodeSize: n => 3 * (1 + (n.ratio ?? 0)),
   nodeColor: node => node.color!,
   linkColor: "#666666",
   linkArrows: false,
   linkWidth: 0.1,
+  linkGreyoutOpacity: 0.5,
   pixelRatio: 2,
-  useQuadtree: true,
+  useQuadtree: false,
   simulation: {
     decay: 1000,
     center: 0,
@@ -42,9 +43,6 @@ const config: GraphConfigInterface<Node, Link> = {
     },
     onNodeMouseOut: () => {
       cosmosLabels.updateHoveredNodeLabel();
-    },
-    onMouseMove: (node, _, nodePosition) => {
-      cosmosLabels.updateHoveredNodeLabel(node, nodePosition);
     },
     onZoom: () => {
       cosmosLabels.updateHoveredNodeLabel();
@@ -90,14 +88,13 @@ const onPointClick = (node?: Node) => {
   selectedNode = node;
   cosmosLabels.resetNodes();
   if (node) {
+    graph.selectNodeById(node.id, true);
     var adjacentNodes = graph.getAdjacentNodes(node.id);
     if (adjacentNodes) {
-      graph.selectNodesByIds([node.id, ...adjacentNodes.map(n => n.id)]);
-      var addNodes = adjacentNodes.sort((a, b) => b.totalLinks! - a.totalLinks!).slice(0, 50);
+      var addNodes = adjacentNodes.filter(n => n.id !== node.id).sort((a, b) => b.totalLinks! - a.totalLinks!).slice(0, 50);
       cosmosLabels.trackNodes([node, ...addNodes]);
     } else {
       cosmosLabels.trackNodes([node]);
-      graph.selectNodeById(node.id);
     }
 
     $("#selected-area").show();
@@ -174,3 +171,5 @@ $("#node-search").on("select2:select", function(e) {
 $("#node-search").on("select2:unselect", function(e) {
   onPointClick();
 });
+
+

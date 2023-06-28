@@ -54,6 +54,7 @@ export class CosmosLabels<
   updateTrackedNodesLabels(focusedNode?: N) {
     if (!this.cosmos || !this.cssLabels || this.isLabelsDistroyed || this.isLabelsHidden)
       return;
+
     const { cosmos, selectedNodes } = this;
     let labels: LabelOptions[] = [];
     if (this.trackedNodes) {
@@ -66,7 +67,6 @@ export class CosmosLabels<
           return undefined;
         const positions = trackedNodesPositions.get(id);
         const screenPosition = cosmos.spaceToScreenPosition([positions?.[0] ?? 0, positions?.[1] ?? 0]);
-        const radius = cosmos.spaceToScreenRadius(cosmos.config.nodeSizeScale * (cosmos.getNodeRadiusById(id) ?? 0));
         let opacity = selectedNodes ? 0.1 : 1;
         if (selectedNodes?.size)
           opacity = selectedNodes.has(p) ? 1 : 0.1;
@@ -75,16 +75,16 @@ export class CosmosLabels<
           id,
           text: text,
           x: screenPosition[0],
-          y: screenPosition[1] - (radius + 2),
+          y: screenPosition[1],
           opacity,
           weight: opacity,
           shouldBeShown: focusedNode?.id === id,
           color: "#f5f5f5"
         };
-      }).filter((d) => d != undefined);
+      }).filter((d) => d !== undefined);
     }
     this.cssLabels.setLabels(labels);
-    this.cssLabels.draw(true);
+    this.cssLabels.draw();
   }
 
   updateHoveredNodeLabel(hoveredNode?: N, hoveredNodeSpacePosition?: [number, number]) {
@@ -94,11 +94,10 @@ export class CosmosLabels<
     const text = hoveredNode && this.textAccessor(hoveredNode);
     if (hoveredNode && hoveredNodeSpacePosition && text != undefined) {
       const screenPosition = cosmos.spaceToScreenPosition(hoveredNodeSpacePosition);
-      const radius = cosmos.spaceToScreenRadius(cosmos.config.nodeSizeScale * (cosmos.getNodeRadiusById(hoveredNode.id) ?? 0));
       this.permanentCssLabel.setText(text);
       this.permanentCssLabel.setVisibility(true);
       this.permanentCssLabel.setColor("#f5f5f5")
-      this.permanentCssLabel.setPosition(screenPosition[0], screenPosition[1] - (radius + 2));
+      this.permanentCssLabel.setPosition(screenPosition[0], screenPosition[1]);
     } else {
       this.permanentCssLabel.setVisibility(false);
     }

@@ -4,6 +4,7 @@ export type Node = {
   inputLinks?: number;
   outputLinks?: number;
   color?: string;
+  ratio?: number;
 };
 
 export type Link = {
@@ -62,6 +63,7 @@ function generateNodes(arr: string[][]) {
   const maxCount = Math.max(...nodes.map((n) => n.totalLinks!));
   nodes = nodes.map((n) => ({
     ...n,
+    ratio: parseFloat((n.totalLinks! / maxCount).toFixed(2)),
     color: getColor(parseFloat((n.totalLinks! / maxCount).toFixed(2)))
   }));
 
@@ -69,8 +71,8 @@ function generateNodes(arr: string[][]) {
 }
 
 function getColor(ratio: number = 0): string {
-  var color1 = 'd81b60';
-  var color2 = '4F74C2';
+  var color1 = 'f50057';
+  var color2 = '448aff';
   var hex = function(x: number): string {
       const y = x.toString(16);
       return (y.length == 1) ? '0' + y : y;

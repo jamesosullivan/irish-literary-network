@@ -264,6 +264,7 @@ function generateNodes(arr) {
   }));
   nodes = nodes.map(function (n) {
     return __assign(__assign({}, n), {
+      ratio: parseFloat((n.totalLinks / maxCount).toFixed(2)),
       color: getColor(parseFloat((n.totalLinks / maxCount).toFixed(2)))
     });
   });
@@ -276,8 +277,8 @@ function getColor(ratio) {
   if (ratio === void 0) {
     ratio = 0;
   }
-  var color1 = 'd81b60';
-  var color2 = '4F74C2';
+  var color1 = 'f50057';
+  var color2 = '448aff';
   var hex = function hex(x) {
     var y = x.toString(16);
     return y.length == 1 ? '0' + y : y;
@@ -38501,44 +38502,41 @@ var CosmosLabels = /** @class */function () {
       var trackedNodesPositions_1 = cosmos.getTrackedNodePositionsMap();
       // @ts-ignore
       labels = this.trackedNodes.map(function (p) {
-        var _a, _b, _c;
+        var _a, _b;
         var id = p.id;
         var text = _this.textAccessor(p);
         if (text === undefined) return undefined;
         var positions = trackedNodesPositions_1.get(id);
         var screenPosition = cosmos.spaceToScreenPosition([(_a = positions === null || positions === void 0 ? void 0 : positions[0]) !== null && _a !== void 0 ? _a : 0, (_b = positions === null || positions === void 0 ? void 0 : positions[1]) !== null && _b !== void 0 ? _b : 0]);
-        var radius = cosmos.spaceToScreenRadius(cosmos.config.nodeSizeScale * ((_c = cosmos.getNodeRadiusById(id)) !== null && _c !== void 0 ? _c : 0));
         var opacity = selectedNodes ? 0.1 : 1;
         if (selectedNodes === null || selectedNodes === void 0 ? void 0 : selectedNodes.size) opacity = selectedNodes.has(p) ? 1 : 0.1;
         return {
           id: id,
           text: text,
           x: screenPosition[0],
-          y: screenPosition[1] - (radius + 2),
+          y: screenPosition[1],
           opacity: opacity,
           weight: opacity,
           shouldBeShown: (focusedNode === null || focusedNode === void 0 ? void 0 : focusedNode.id) === id,
           color: "#f5f5f5"
         };
       }).filter(function (d) {
-        return d != undefined;
+        return d !== undefined;
       });
     }
     this.cssLabels.setLabels(labels);
-    this.cssLabels.draw(true);
+    this.cssLabels.draw();
   };
   CosmosLabels.prototype.updateHoveredNodeLabel = function (hoveredNode, hoveredNodeSpacePosition) {
-    var _a;
     if (!this.cosmos || !this.permanentCssLabel || this.isLabelsDistroyed || this.isLabelsHidden) return;
     var cosmos = this.cosmos;
     var text = hoveredNode && this.textAccessor(hoveredNode);
     if (hoveredNode && hoveredNodeSpacePosition && text != undefined) {
       var screenPosition = cosmos.spaceToScreenPosition(hoveredNodeSpacePosition);
-      var radius = cosmos.spaceToScreenRadius(cosmos.config.nodeSizeScale * ((_a = cosmos.getNodeRadiusById(hoveredNode.id)) !== null && _a !== void 0 ? _a : 0));
       this.permanentCssLabel.setText(text);
       this.permanentCssLabel.setVisibility(true);
       this.permanentCssLabel.setColor("#f5f5f5");
-      this.permanentCssLabel.setPosition(screenPosition[0], screenPosition[1] - (radius + 2));
+      this.permanentCssLabel.setPosition(screenPosition[0], screenPosition[1]);
     } else {
       this.permanentCssLabel.setVisibility(false);
     }
@@ -38595,15 +38593,19 @@ var currentGraphData;
 var mostImportantNodes = [];
 var config = {
   backgroundColor: "#222222",
-  nodeSize: 3,
+  nodeSize: function nodeSize(n) {
+    var _a;
+    return 3 * (1 + ((_a = n.ratio) !== null && _a !== void 0 ? _a : 0));
+  },
   nodeColor: function nodeColor(node) {
     return node.color;
   },
   linkColor: "#666666",
   linkArrows: false,
   linkWidth: 0.1,
+  linkGreyoutOpacity: 0.5,
   pixelRatio: 2,
-  useQuadtree: true,
+  useQuadtree: false,
   simulation: {
     decay: 1000,
     center: 0,
@@ -38629,9 +38631,6 @@ var config = {
     },
     onNodeMouseOut: function onNodeMouseOut() {
       cosmosLabels.updateHoveredNodeLabel();
-    },
-    onMouseMove: function onMouseMove(node, _, nodePosition) {
-      cosmosLabels.updateHoveredNodeLabel(node, nodePosition);
     },
     onZoom: function onZoom() {
       cosmosLabels.updateHoveredNodeLabel();
@@ -38675,18 +38674,17 @@ var onPointClick = function onPointClick(node) {
   selectedNode = node;
   cosmosLabels.resetNodes();
   if (node) {
+    graph.selectNodeById(node.id, true);
     var adjacentNodes = graph.getAdjacentNodes(node.id);
     if (adjacentNodes) {
-      graph.selectNodesByIds(__spreadArray([node.id], adjacentNodes.map(function (n) {
-        return n.id;
-      }), true));
-      var addNodes = adjacentNodes.sort(function (a, b) {
+      var addNodes = adjacentNodes.filter(function (n) {
+        return n.id !== node.id;
+      }).sort(function (a, b) {
         return b.totalLinks - a.totalLinks;
       }).slice(0, 50);
       cosmosLabels.trackNodes(__spreadArray([node], addNodes, true));
     } else {
       cosmosLabels.trackNodes([node]);
-      graph.selectNodeById(node.id);
     }
     $("#selected-area").show();
     $("#selected-node").text(node.id);
@@ -38791,7 +38789,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44933" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44877" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
